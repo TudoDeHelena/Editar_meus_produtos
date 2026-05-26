@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Admin — Tudo de Helena</title>
+
+  <style>
+    :root {
+      --fundo: #F8C8DC;
+      --fundo-2: #f4b6d2;
+      --card: #fff7fb;
+      --vinho: #FF69B4;
+      --vinho-escuro: #d94f99;
+      --dourado: #b78a42;
+      --texto: #3f2533;
+      --texto-suave: #76586a;
+      --borda: rgba(255, 105, 180, .35);
+      --verde: #25d366;
+      --vermelho: #d93f3f;
+      --branco: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(255, 105, 180, .18), transparent 32%),
+        linear-gradient(180deg, var(--fundo), var(--fundo-2));
+      color: var(--texto);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    header {
+      padding: 38px 18px;
+      text-align: center;
+    }
+
+    .topo {
+      max-width: 1100px;
+      margin: auto;
+      background: var(--branco);
+      border: 1px solid var(--borda);
+      border-radius: 28px;
+      padding: 30px 22px;
+      box-shadow: 0 18px 45px rgba(63, 37, 51, .14);
+    }
+
+    h1 {
+      color: var(--vinho);
+      font-family: Georgia, serif;
+      font-weight: 400;
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      margin-bottom: 8px;
+    }
+
+    .topo p {
+      color: var(--texto-suave);
+      max-width: 760px;
+      margin: auto;
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 0 auto 60px;
+      padding: 0 18px;
+    }
+
+    .painel,
+    .formulario,
+    .tabela-box {
+      background: rgba(255, 247, 251, .96);
+      border: 1px solid var(--borda);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 16px 35px rgba(63, 37, 51, .08);
+      margin-bottom: 22px;
+    }
+
+    .formulario {
+      display: none;
+      border: 2px solid rgba(255, 105, 180, .35);
+    }
+
+    .formulario.aberto {
+      display: block;
+      animation: aparecer .22s ease;
+    }
+
+    @keyframes aparecer {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .painel-grid {
+      display: grid;
+      grid-template-columns: 1fr 160px;
+      gap: 14px;
+      align-items: end;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      color: var(--vinho);
+      margin-bottom: 7px;
+      font-size: .93rem;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid var(--borda);
+      background: #fffdf8;
+      color: var(--texto);
+      padding: 13px 14px;
+      border-radius: 14px;
+      font-size: 1rem;
+      outline: none;
+      font-family: Arial, sans-serif;
+    }
+
+    select {
+      cursor: pointer;
+      appearance: auto;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--vinho);
+      box-shadow: 0 0 0 3px rgba(255, 105, 180, .18);
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 13px 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .2s ease;
+      font-family: Arial, sans-serif;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.04);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .btn-primario {
+      background: linear-gradient(180deg, var(--vinho), var(--vinho-escuro));
+      color: white;
+      box-shadow: 0 10px 20px rgba(63, 37, 51, .18);
+    }
+
+    .btn-verde {
+      background: linear-gradient(180deg, #2edb6d 0%, var(--verde) 100%);
+      color: white;
+      box-shadow: 0 10px 20px rgba(37, 211, 102, .18);
+    }
+
+    .btn-neutro {
+      background: #ffffff;
+      color: var(--vinho);
+      border: 1px solid var(--borda);
+    }
+
+    .btn-perigo {
+      background: var(--vermelho);
+      color: white;
+    }
+
+    .acoes-form {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .campo-grande {
+      grid-column: 1 / -1;
+    }
+
+    .campo-outra-categoria {
+      display: none;
+      grid-column: 1 / -1;
+    }
+
+    .campo-outra-categoria.aberto {
+      display: block;
+    }
+
+    .titulo-bloco {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .titulo-bloco h2 {
+      color: var(--vinho);
+      font-family: Georgia, serif;
+      font-weight: 400;
+      font-size: 1.8rem;
+    }
+
+    .status {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      display: none;
+      font-weight: 700;
+    }
+
+    .status.sucesso {
+      display: block;
+      background: rgba(37, 211, 102, .14);
+      color: #137a3a;
+      border: 1px solid rgba(37, 211, 102, .35);
+    }
+
+    .status.erro {
+      display: block;
+      background: rgba(217, 63, 63, .12);
+      color: #a52727;
+      border: 1px solid rgba(217, 63, 63, .35);
+    }
+
+    .tabela-scroll {
+      overflow-x: auto;
+      border-radius: 18px;
+      border: 1px solid var(--borda);
+      background: white;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+      background: white;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 13px 12px;
+      border-bottom: 1px solid rgba(255, 105, 180, .18);
+      vertical-align: top;
+    }
+
+    th {
+      background: #fff7fb;
+      color: var(--vinho);
+      font-size: .9rem;
+      white-space: nowrap;
+    }
+
+    td {
+      color: var(--texto-suave);
+      font-size: .94rem;
+    }
+
+    .td-produto {
+      color: var(--texto);
+      font-weight: 700;
+    }
+
+    .td-descricao {
+      white-space: pre-line;
+      max-width: 360px;
+    }
+
+    .td-acoes {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .td-acoes button {
+      padding: 9px 12px;
+      font-size: .86rem;
+    }
+
+    .contador {
+      color: var(--texto-suave);
+      font-weight: 700;
+    }
+
+    .aviso {
+      background: rgba(255, 255, 255, .7);
+      border: 1px dashed var(--borda);
+      color: var(--texto-suave);
+      padding: 13px 15px;
+      border-radius: 16px;
+      margin-top: 14px;
+      font-size: .94rem;
+    }
+
+    mark {
+      background: rgba(255, 105, 180, .18);
+      color: inherit;
+      padding: 0 2px;
+      border-radius: 4px;
+    }
+
+    @media (max-width: 760px) {
+      .painel-grid,
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .painel-grid {
+        align-items: stretch;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .td-acoes {
+        flex-direction: column;
+      }
+
+      .td-acoes button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="topo">
+      <h1>Admin Tudo de Helena</h1>
+      <p>Gerencie os produtos do catálogo usando a estrutura atual da sua planilha: Categoria, Produto, Descrição e Valor.</p>
+
+      <div class="aviso">
+        Esta página altera diretamente a aba <strong>Página1</strong> do Google Sheets.
+        A planilha deve continuar com as colunas:
+        <strong>Categoria | Produto | Descrição | Valor</strong>.
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="painel">
+      <div class="titulo-bloco">
+        <h2>Busca em tempo real</h2>
+        <span class="contador" id="contadorProdutos">0 produtos</span>
+      </div>
+
+      <div class="painel-grid">
+        <div>
+          <label for="busca">Buscar produto</label>
+          <input type="search" id="busca" placeholder="Digite categoria, produto, descrição ou valor..." autocomplete="off" />
+        </div>
+
+        <button class="btn-primario" onclick="carregarProdutos()">
+          Atualizar
+        </button>
+      </div>
+
+      <div id="status" class="status"></div>
+    </section>
+
+    <section class="formulario" id="boxFormulario">
+      <div class="titulo-bloco">
+        <h2 id="tituloFormulario">Adicionar produto</h2>
+        <button class="btn-neutro" onclick="fecharFormulario()">Fechar</button>
+      </div>
+
+      <input type="hidden" id="linhaProduto" />
+
+      <div class="form-grid">
+        <div>
+          <label for="categoria">Categoria</label>
+          <select id="categoria" onchange="verificarOutraCategoria()">
+            <option value="">Selecione uma categoria</option>
+            <option value="Kit Pegue e Monte">Kit Pegue e Monte</option>
+            <option value="Montagem de Mesa">Montagem de Mesa</option>
+            <option value="Kit Festa na Mesa">Kit Festa na Mesa</option>
+            <option value="Doces">Doces</option>
+            <option value="Bolos">Bolos</option>
+            <option value="Adicionais">Adicionais</option>
+            <option value="__outra__">Outra categoria...</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="produto">Produto</label>
+          <input type="text" id="produto" placeholder="Ex: Bronze" />
+        </div>
+
+        <div class="campo-outra-categoria" id="campoOutraCategoria">
+          <label for="outraCategoria">Nome da nova categoria</label>
+          <input type="text" id="outraCategoria" placeholder="Digite o nome da categoria" />
+        </div>
+
+        <div class="campo-grande">
+          <label for="descricao">Descrição</label>
+          <textarea id="descricao" placeholder="Digite a descrição. Para quebrar linha, use Enter."></textarea>
+        </div>
+
+        <div>
+          <label for="valor">Valor</label>
+          <input type="text" id="valor" placeholder="Ex: 180,00" />
+        </div>
+      </div>
+
+      <div class="acoes-form">
+        <button class="btn-verde" onclick="salvarProduto()">Salvar produto</button>
+        <button class="btn-neutro" onclick="limparFormulario()">Limpar formulário</button>
+      </div>
+    </section>
+
+    <section class="tabela-box">
+      <div class="titulo-bloco">
+        <h2>Produtos cadastrados</h2>
+        <button class="btn-verde" onclick="abrirNovoProduto()">Adicionar novo produto</button>
+        <span class="contador" id="contadorFiltrado">Mostrando 0</span>
+      </div>
+
+      <div class="tabela-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Linha</th>
+              <th>Categoria</th>
+              <th>Produto</th>
+              <th>Descrição</th>
+              <th>Valor</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+
+          <tbody id="corpoTabela">
+            <tr>
+              <td colspan="6">Carregando produtos...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbzCZOi3sBG78iZP8VYbUUQ54edtH0dfx18vOEmU2mYHsm8rNgZXp1rsFvzyYKnfQNtU9A/exec";
+
+    let produtos = [];
+
+    function normalizarTexto(texto) {
+      return String(texto || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim();
+    }
+
+    function escaparHTML(texto) {
+      return String(texto ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function destacarBusca(texto) {
+      const termoOriginal = document.getElementById("busca").value.trim();
+
+      if (!termoOriginal) {
+        return escaparHTML(texto);
+      }
+
+      const textoSeguro = escaparHTML(texto);
+      const termoSeguro = escaparHTML(termoOriginal);
+
+      try {
+        const regex = new RegExp("(" + termoSeguro.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "gi");
+        return textoSeguro.replace(regex, "<mark>$1</mark>");
+      } catch (erro) {
+        return textoSeguro;
+      }
+    }
+
+    function formatarPreco(valor) {
+      const numero = Number(valor) || 0;
+
+      return numero.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+      });
+    }
+
+    function converterValor(valor) {
+      if (typeof valor === "number") return valor;
+
+      let texto = String(valor || "")
+        .replace("R$", "")
+        .replace(/\s/g, "")
+        .trim();
+
+      if (texto.includes(",") && texto.includes(".")) {
+        texto = texto.replace(/\./g, "").replace(",", ".");
+      } else if (texto.includes(",")) {
+        texto = texto.replace(",", ".");
+      }
+
+      const numero = Number(texto);
+
+      return isNaN(numero) ? 0 : numero;
+    }
+
+    function mostrarStatus(mensagem, tipo = "sucesso") {
+      const status = document.getElementById("status");
+
+      status.textContent = mensagem;
+      status.className = "status " + tipo;
+
+      setTimeout(() => {
+        status.className = "status";
+        status.textContent = "";
+      }, 4500);
+    }
+
+    function abrirFormulario() {
+      const boxFormulario = document.getElementById("boxFormulario");
+
+      boxFormulario.classList.add("aberto");
+
+      setTimeout(() => {
+        boxFormulario.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      }, 80);
+    }
+
+    function fecharFormulario() {
+      document.getElementById("boxFormulario").classList.remove("aberto");
+    }
+
+    function abrirNovoProduto() {
+      limparFormulario();
+      abrirFormulario();
+    }
+
+    function verificarOutraCategoria() {
+      const categoria = document.getElementById("categoria").value;
+      const campoOutraCategoria = document.getElementById("campoOutraCategoria");
+
+      if (categoria === "__outra__") {
+        campoOutraCategoria.classList.add("aberto");
+      } else {
+        campoOutraCategoria.classList.remove("aberto");
+        document.getElementById("outraCategoria").value = "";
+      }
+    }
+
+    function obterCategoriaFinal() {
+      const categoria = document.getElementById("categoria").value;
+
+      if (categoria === "__outra__") {
+        return document.getElementById("outraCategoria").value.trim();
+      }
+
+      return categoria.trim();
+    }
+
+    function selecionarCategoriaNoSelect(categoriaProduto) {
+      const select = document.getElementById("categoria");
+      const outraCategoria = document.getElementById("outraCategoria");
+      const opcoes = Array.from(select.options).map(option => option.value);
+
+      if (opcoes.includes(categoriaProduto)) {
+        select.value = categoriaProduto;
+        outraCategoria.value = "";
+      } else {
+        select.value = "__outra__";
+        outraCategoria.value = categoriaProduto;
+      }
+
+      verificarOutraCategoria();
+    }
+
+    function prepararProdutosRecebidos(lista) {
+      if (!Array.isArray(lista)) {
+        return [];
+      }
+
+      return lista.map((item, index) => {
+        const linhaOriginal =
+          item.linha ??
+          item.row ??
+          item.numeroLinha ??
+          item.id ??
+          (index + 2);
+
+        return {
+          linha: Number(linhaOriginal),
+          categoria: String(item.categoria ?? item.Categoria ?? "").trim(),
+          produto: String(item.produto ?? item.Produto ?? "").trim(),
+          descricao: String(item.descricao ?? item.Descrição ?? item.descricaoProduto ?? "").trim(),
+          valor: converterValor(item.valor ?? item.Valor ?? 0)
+        };
+      });
+    }
+
+    async function carregarProdutos() {
+      try {
+        const corpoTabela = document.getElementById("corpoTabela");
+
+        corpoTabela.innerHTML = `
+          <tr>
+            <td colspan="6">Carregando produtos...</td>
+          </tr>
+        `;
+
+        const resposta = await fetch(API_URL + "?action=listar");
+        const dados = await resposta.json();
+
+        produtos = prepararProdutosRecebidos(dados);
+
+        if (!Array.isArray(produtos)) {
+          throw new Error("A resposta da API não retornou uma lista de produtos.");
+        }
+
+        document.getElementById("contadorProdutos").textContent =
+          produtos.length + (produtos.length === 1 ? " produto" : " produtos");
+
+        renderizarTabela();
+
+      } catch (erro) {
+        console.error(erro);
+
+        document.getElementById("corpoTabela").innerHTML = `
+          <tr>
+            <td colspan="6">Erro ao carregar produtos.</td>
+          </tr>
+        `;
+
+        mostrarStatus("Erro ao carregar produtos: " + erro.message, "erro");
+      }
+    }
+
+    function renderizarTabela() {
+      const busca = normalizarTexto(document.getElementById("busca").value);
+
+      const filtrados = produtos.filter(item => {
+        const texto = normalizarTexto(
+          item.categoria + " " +
+          item.produto + " " +
+          item.descricao + " " +
+          item.valor + " " +
+          formatarPreco(item.valor)
+        );
+
+        return texto.includes(busca);
+      });
+
+      const corpoTabela = document.getElementById("corpoTabela");
+
+      document.getElementById("contadorFiltrado").textContent =
+        "Mostrando " + filtrados.length;
+
+      if (filtrados.length === 0) {
+        corpoTabela.innerHTML = `
+          <tr>
+            <td colspan="6">Nenhum produto encontrado.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      corpoTabela.innerHTML = filtrados.map(item => `
+        <tr>
+          <td>${item.linha}</td>
+
+          <td>${destacarBusca(item.categoria)}</td>
+
+          <td class="td-produto">${destacarBusca(item.produto)}</td>
+
+          <td class="td-descricao">${destacarBusca(item.descricao)}</td>
+
+          <td>${destacarBusca(formatarPreco(item.valor))}</td>
+
+          <td>
+            <div class="td-acoes">
+              <button class="btn-primario" type="button" data-linha="${item.linha}">
+                Editar
+              </button>
+
+              <button class="btn-perigo" type="button" data-excluir="${item.linha}">
+                Excluir
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join("");
+
+      document.querySelectorAll("[data-linha]").forEach(botao => {
+        botao.addEventListener("click", function() {
+          editarNoFormulario(Number(this.dataset.linha));
+        });
+      });
+
+      document.querySelectorAll("[data-excluir]").forEach(botao => {
+        botao.addEventListener("click", function() {
+          excluirProduto(Number(this.dataset.excluir));
+        });
+      });
+    }
+
+    function editarNoFormulario(linha) {
+      const item = produtos.find(produto => Number(produto.linha) === Number(linha));
+
+      if (!item) {
+        mostrarStatus("Produto não encontrado para edição.", "erro");
+        return;
+      }
+
+      document.getElementById("tituloFormulario").textContent = "Editar produto";
+      document.getElementById("linhaProduto").value = item.linha;
+
+      selecionarCategoriaNoSelect(item.categoria);
+
+      document.getElementById("produto").value = item.produto;
+      document.getElementById("descricao").value = item.descricao;
+      document.getElementById("valor").value = String(item.valor).replace(".", ",");
+
+      abrirFormulario();
+    }
+
+    function limparFormulario() {
+      document.getElementById("tituloFormulario").textContent = "Adicionar produto";
+      document.getElementById("linhaProduto").value = "";
+      document.getElementById("categoria").value = "";
+      document.getElementById("outraCategoria").value = "";
+      document.getElementById("produto").value = "";
+      document.getElementById("descricao").value = "";
+      document.getElementById("valor").value = "";
+      verificarOutraCategoria();
+    }
+
+    async function salvarProduto() {
+      try {
+        const linha = document.getElementById("linhaProduto").value;
+        const categoria = obterCategoriaFinal();
+        const produto = document.getElementById("produto").value.trim();
+        const descricao = document.getElementById("descricao").value.trim();
+        const valor = converterValor(document.getElementById("valor").value);
+
+        if (!categoria) {
+          mostrarStatus("Selecione ou informe uma categoria.", "erro");
+          return;
+        }
+
+        if (!produto) {
+          mostrarStatus("Informe o nome do produto.", "erro");
+          return;
+        }
+
+        const action = linha ? "editar" : "criar";
+
+        const payload = {
+          action,
+          linha,
+          categoria,
+          produto,
+          descricao,
+          valor
+        };
+
+        const resposta = await fetch(API_URL, {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
+
+        const retorno = await resposta.json();
+
+        if (retorno.status !== "sucesso") {
+          throw new Error(retorno.mensagem || "Não foi possível salvar.");
+        }
+
+        mostrarStatus(retorno.mensagem || "Produto salvo com sucesso.", "sucesso");
+        limparFormulario();
+        fecharFormulario();
+        await carregarProdutos();
+
+      } catch (erro) {
+        console.error(erro);
+        mostrarStatus("Erro ao salvar produto: " + erro.message, "erro");
+      }
+    }
+
+    async function excluirProduto(linha) {
+      try {
+        const item = produtos.find(produto => Number(produto.linha) === Number(linha));
+
+        if (!item) {
+          mostrarStatus("Produto não encontrado.", "erro");
+          return;
+        }
+
+        const confirmar = confirm(
+          "Tem certeza que deseja excluir este produto?\n\n" +
+          item.categoria + " - " + item.produto
+        );
+
+        if (!confirmar) return;
+
+        const resposta = await fetch(API_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "excluir",
+            linha
+          })
+        });
+
+        const retorno = await resposta.json();
+
+        if (retorno.status !== "sucesso") {
+          throw new Error(retorno.mensagem || "Não foi possível excluir.");
+        }
+
+        mostrarStatus(retorno.mensagem || "Produto excluído com sucesso.", "sucesso");
+        limparFormulario();
+        fecharFormulario();
+        await carregarProdutos();
+
+      } catch (erro) {
+        console.error(erro);
+        mostrarStatus("Erro ao excluir produto: " + erro.message, "erro");
+      }
+    }
+
+    document.getElementById("busca").addEventListener("input", renderizarTabela);
+
+    carregarProdutos();
+  </script>
+
+</body>
+</html>
