@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -176,6 +177,12 @@
       transform: translateY(1px);
     }
 
+    button:disabled {
+      opacity: .65;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     .btn-primario {
       background: linear-gradient(180deg, var(--vinho), var(--vinho-escuro));
       color: white;
@@ -261,6 +268,13 @@
       background: rgba(217, 63, 63, .12);
       color: #a52727;
       border: 1px solid rgba(217, 63, 63, .35);
+    }
+
+    .status.aviso-status {
+      display: block;
+      background: rgba(255, 193, 7, .18);
+      color: #7a5a00;
+      border: 1px solid rgba(255, 193, 7, .45);
     }
 
     .tabela-scroll {
@@ -447,7 +461,7 @@
       </div>
 
       <div class="acoes-form">
-        <button class="btn-verde" onclick="salvarProduto()">Salvar produto</button>
+        <button class="btn-verde" id="btnSalvar" onclick="salvarProduto()">Salvar produto</button>
         <button class="btn-neutro" onclick="limparFormulario()">Limpar formulário</button>
       </div>
     </section>
@@ -560,7 +574,7 @@
       setTimeout(() => {
         status.className = "status";
         status.textContent = "";
-      }, 4500);
+      }, 5500);
     }
 
     function abrirFormulario() {
@@ -660,10 +674,6 @@
         const dados = await resposta.json();
 
         produtos = prepararProdutosRecebidos(dados);
-
-        if (!Array.isArray(produtos)) {
-          throw new Error("A resposta da API não retornou uma lista de produtos.");
-        }
 
         document.getElementById("contadorProdutos").textContent =
           produtos.length + (produtos.length === 1 ? " produto" : " produtos");
@@ -782,7 +792,17 @@
       verificarOutraCategoria();
     }
 
+    async function enviarAlteracaoParaPlanilha(payload) {
+      await fetch(API_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify(payload)
+      });
+    }
+
     async function salvarProduto() {
+      const btnSalvar = document.getElementById("btnSalvar");
+
       try {
         const linha = document.getElementById("linhaProduto").value;
         const categoria = obterCategoriaFinal();
@@ -811,24 +831,30 @@
           valor
         };
 
-        const resposta = await fetch(API_URL, {
-          method: "POST",
-          body: JSON.stringify(payload)
-        });
+        btnSalvar.disabled = true;
+        btnSalvar.textContent = "Salvando...";
 
-        const retorno = await resposta.json();
+        await enviarAlteracaoParaPlanilha(payload);
 
-        if (retorno.status !== "sucesso") {
-          throw new Error(retorno.mensagem || "Não foi possível salvar.");
-        }
+        mostrarStatus("Alteração enviada para a planilha. Atualizando lista em instantes...", "aviso-status");
 
-        mostrarStatus(retorno.mensagem || "Produto salvo com sucesso.", "sucesso");
-        limparFormulario();
-        fecharFormulario();
-        await carregarProdutos();
+        setTimeout(async () => {
+          limparFormulario();
+          fecharFormulario();
+          await carregarProdutos();
+
+          btnSalvar.disabled = false;
+          btnSalvar.textContent = "Salvar produto";
+
+          mostrarStatus("Lista atualizada. Confira se a alteração apareceu abaixo.", "sucesso");
+        }, 1800);
 
       } catch (erro) {
         console.error(erro);
+
+        btnSalvar.disabled = false;
+        btnSalvar.textContent = "Salvar produto";
+
         mostrarStatus("Erro ao salvar produto: " + erro.message, "erro");
       }
     }
@@ -849,24 +875,20 @@
 
         if (!confirmar) return;
 
-        const resposta = await fetch(API_URL, {
-          method: "POST",
-          body: JSON.stringify({
-            action: "excluir",
-            linha
-          })
+        await enviarAlteracaoParaPlanilha({
+          action: "excluir",
+          linha
         });
 
-        const retorno = await resposta.json();
+        mostrarStatus("Exclusão enviada para a planilha. Atualizando lista em instantes...", "aviso-status");
 
-        if (retorno.status !== "sucesso") {
-          throw new Error(retorno.mensagem || "Não foi possível excluir.");
-        }
+        setTimeout(async () => {
+          limparFormulario();
+          fecharFormulario();
+          await carregarProdutos();
 
-        mostrarStatus(retorno.mensagem || "Produto excluído com sucesso.", "sucesso");
-        limparFormulario();
-        fecharFormulario();
-        await carregarProdutos();
+          mostrarStatus("Lista atualizada. Confira se o produto foi removido.", "sucesso");
+        }, 1800);
 
       } catch (erro) {
         console.error(erro);
